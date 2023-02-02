@@ -14,7 +14,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
     @IBOutlet weak var bellButton: UIButton!
     @IBOutlet weak var eyeButton: UIButton!
     @IBOutlet weak var usdAmountLabel: UILabel!
+    @IBOutlet weak var usdAmountLoadingView: UIView!
     @IBOutlet weak var khrAmountLabel: UILabel!
+    @IBOutlet weak var khrAmountLoadingView: UIView!
     @IBOutlet weak var floatingView: UIView! {
         didSet {
             floatingView.layer.cornerRadius = 25
@@ -63,6 +65,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         bindEvent()
         bindUI()
         setupTimer()
+        configureGradientView(target: usdAmountLoadingView)
+        configureGradientView(target: khrAmountLoadingView)
     }
     
     func configBannerCollectioView() {
@@ -93,6 +97,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         Publishers.CombineLatest(viewModel.$usdAccountBalance, viewModel.$hiddenBalance)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] balance, hiddenBalance in
+                self?.usdAmountLoadingView.isHidden = balance != nil
+                guard let balance = balance else {
+                    return
+                }
                 let formatter = NumberFormatter()
                 formatter.numberStyle = .decimal
                 let moneyString = formatter.string(from: NSNumber(value: balance))
@@ -102,6 +110,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         Publishers.CombineLatest(viewModel.$hkrAccountBalance, viewModel.$hiddenBalance)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] balance, hiddenBalance in
+                self?.khrAmountLoadingView.isHidden = balance != nil
+                guard let balance = balance else {
+                    return
+                }
                 let formatter = NumberFormatter()
                 formatter.numberStyle = .decimal
                 let moneyString = formatter.string(from: NSNumber(value: balance))
@@ -180,6 +192,26 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         let timer = Timer.scheduledTimer(timeInterval: 3,target:self, selector:#selector(scrollAutomatically), userInfo:nil, repeats:true)
         RunLoop.current.add(timer, forMode: .common)
         self.timer = timer
+    }
+    
+    func configureGradientView(target: UIView) {
+        let fromColor = #colorLiteral(red: 0.9411764706, green: 0.9411764706, blue: 0.9411764706, alpha: 1)
+        let toColor = #colorLiteral(red: 0.9843137255, green: 0.9843137255, blue: 0.9843137255, alpha: 1)
+        let gradient = CAGradientLayer()
+        gradient.frame = target.bounds
+        gradient.locations = [0, 1]
+        gradient.startPoint = CGPoint(x: 0.0, y: 0.0)
+        gradient.endPoint = CGPoint(x: 1.0, y: 0.0)
+        gradient.colors = [fromColor.cgColor, toColor.cgColor]
+        target.layer.insertSublayer(gradient, at: 0)
+        target.clipsToBounds = true
+        
+        let animation = CABasicAnimation(keyPath: "locations")
+        animation.fromValue = [0 , 0]
+        animation.toValue = [0 , 1]
+        animation.autoreverses = true
+        animation.repeatCount = .infinity
+        gradient.add(animation, forKey: nil)
     }
     
     
