@@ -14,7 +14,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
     @IBOutlet weak var bellButton: UIButton!
     @IBOutlet weak var eyeButton: UIButton!
     @IBOutlet weak var usdAmountLabel: UILabel!
+    @IBOutlet weak var usdAmountLoadingView: UIView!
     @IBOutlet weak var khrAmountLabel: UILabel!
+    @IBOutlet weak var khrAmountLoadingView: UIView!
     @IBOutlet weak var floatingView: UIView! {
         didSet {
             floatingView.layer.cornerRadius = 25
@@ -38,7 +40,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         }
     }
     @IBOutlet weak var bannerCollectionView: UICollectionView!
-
+    
     @IBOutlet weak var pageControl: UIPageControl!
     
     private var cancellables: Set<AnyCancellable> = []
@@ -48,19 +50,23 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
     let viewModel = HomeViewModel()
     var favoriteModels: [FavoriteModel] = []
     var bannerModels: [BannerModel] = []
+    var timer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-     
+        
         refreshControl.attributedTitle = NSAttributedString(string: "重新載入")
         scrollView.refreshControl = refreshControl
         scrollView.contentInset = .init(top: 0, left: 0, bottom: 71, right: 0)
-     
+        
         configBannerCollectioView()
         configFavoriteCollectioView()
-
+        
         bindEvent()
         bindUI()
+        setupTimer()
+        configureGradientView(target: usdAmountLoadingView)
+        configureGradientView(target: khrAmountLoadingView)
     }
     
     func configBannerCollectioView() {
@@ -84,27 +90,42 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         eyeButton.addTarget(self, action: #selector(clickEyes), for: .touchUpInside)
         bellButton.addTarget(self, action: #selector(clickBell), for: .touchUpInside)
+        pageControl.addTarget(self, action: #selector(changePageContro), for: .valueChanged)
     }
     
     func bindUI() {
         Publishers.CombineLatest(viewModel.$usdAccountBalance, viewModel.$hiddenBalance)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] balance, hiddenBalance in
-                self?.usdAmountLabel.text = hiddenBalance ? "********": balance.description
+                self?.usdAmountLoadingView.isHidden = balance != nil
+                guard let balance = balance else {
+                    return
+                }
+                let formatter = NumberFormatter()
+                formatter.numberStyle = .decimal
+                let moneyString = formatter.string(from: NSNumber(value: balance))
+                self?.usdAmountLabel.text = hiddenBalance ? "********": moneyString
             }).store(in: &cancellables)
         
         Publishers.CombineLatest(viewModel.$hkrAccountBalance, viewModel.$hiddenBalance)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] balance, hiddenBalance in
-                self?.khrAmountLabel.text = hiddenBalance ? "********": balance.description
+                self?.khrAmountLoadingView.isHidden = balance != nil
+                guard let balance = balance else {
+                    return
+                }
+                let formatter = NumberFormatter()
+                formatter.numberStyle = .decimal
+                let moneyString = formatter.string(from: NSNumber(value: balance))
+                self?.khrAmountLabel.text = hiddenBalance ? "********": moneyString
             }).store(in: &cancellables)
         
         viewModel.$hiddenBalance
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] hiddenBalance in
-            let image = hiddenBalance ? UIImage(named: "iconEye02Off") : UIImage(named: "iconEye01On")
-            self?.eyeButton.setImage(image, for: .normal)
-        }).store(in: &cancellables)
+                let image = hiddenBalance ? UIImage(named: "iconEye02Off") : UIImage(named: "iconEye01On")
+                self?.eyeButton.setImage(image, for: .normal)
+            }).store(in: &cancellables)
         
         viewModel.$refreshing
             .receive(on: DispatchQueue.main)
@@ -148,8 +169,53 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
     @objc func clickBell() {
         performSegue(withIdentifier: "homeToNotification", sender: nil)
     }
-
-
+    
+    @objc func changePageContro() {
+        timer?.invalidate()
+        let x = CGFloat(pageControl.currentPage) * bannerCollectionView.frame.size.width
+        bannerCollectionView.setContentOffset(CGPoint(x: x, y: 0), animated: true)
+        setupTimer()
+    }
+    
+    @objc func scrollAutomatically() {
+        if pageControl.currentPage >= bannerModels.count - 1 {
+            pageControl.currentPage = 0
+        } else {
+            pageControl.currentPage = pageControl.currentPage + 1
+        }
+        
+        let x = CGFloat(pageControl.currentPage) * bannerCollectionView.frame.size.width
+        bannerCollectionView.setContentOffset(CGPoint(x: x, y: 0), animated: true)
+    }
+    
+    func setupTimer() {
+        let timer = Timer.scheduledTimer(timeInterval: 3,target:self, selector:#selector(scrollAutomatically), userInfo:nil, repeats:true)
+        RunLoop.current.add(timer, forMode: .common)
+        self.timer = timer
+    }
+    
+    func configureGradientView(target: UIView) {
+        let fromColor = #colorLiteral(red: 0.9411764706, green: 0.9411764706, blue: 0.9411764706, alpha: 1)
+        let toColor = #colorLiteral(red: 0.9843137255, green: 0.9843137255, blue: 0.9843137255, alpha: 1)
+        let gradient = CAGradientLayer()
+        gradient.frame = target.bounds
+        gradient.locations = [0, 1]
+        gradient.startPoint = CGPoint(x: 0.0, y: 0.0)
+        gradient.endPoint = CGPoint(x: 1.0, y: 0.0)
+        gradient.colors = [fromColor.cgColor, toColor.cgColor]
+        target.layer.insertSublayer(gradient, at: 0)
+        target.clipsToBounds = true
+        
+        let animation = CABasicAnimation(keyPath: "locations")
+        animation.fromValue = [0 , 0]
+        animation.toValue = [0 , 1]
+        animation.autoreverses = true
+        animation.repeatCount = .infinity
+        gradient.add(animation, forKey: nil)
+    }
+    
+    
+    
 }
 
 extension HomeViewController: UICollectionViewDataSource {
@@ -158,6 +224,13 @@ extension HomeViewController: UICollectionViewDataSource {
             return favoriteModels.count
         } else {
             return bannerModels.count
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if collectionView == bannerCollectionView, let cell = cell as? BannerCell {
+            let model = bannerModels[indexPath.row]
+            cell.willDisplay(model: model)
         }
     }
     
@@ -172,7 +245,7 @@ extension HomeViewController: UICollectionViewDataSource {
             let model = bannerModels[indexPath.row]
             cell.configure(model: model)
             return cell
-        }else {
+        } else {
             let cell = UICollectionViewCell()
             return cell
         }
@@ -180,9 +253,15 @@ extension HomeViewController: UICollectionViewDataSource {
 }
 
 extension HomeViewController: UIScrollViewDelegate {
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        timer?.invalidate()
+    }
+    
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-            let page = scrollView.contentOffset.x / scrollView.bounds.width
-            pageControl.currentPage = Int(page)
+        let page = scrollView.contentOffset.x / scrollView.bounds.width
+        pageControl.currentPage = Int(page)
+        setupTimer()
     }
 }
 
