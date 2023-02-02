@@ -27,19 +27,23 @@ class APIService :  NSObject {
             .eraseToAnyPublisher()
     }
     
-    func getEmptyNotificationList() -> AnyPublisher<NotificationList, Error> {
-        let urlString = "https://willywu0201.github.io/data/emptyNotificationList.json"
-        return request(urlString: urlString).tryMap { _ in
-            return NotificationList(models: [])
+    func getNotificationList(firstOpen: Bool = false) -> AnyPublisher<NotificationList, Error> {
+        var urlString: String
+        if firstOpen {
+            urlString = "https://willywu0201.github.io/data/emptyNotificationList.json"
+        } else {
+            urlString = "https://willywu0201.github.io/data/notificationList.json"
+        }
+        return request(urlString: urlString).tryMap { result in
+            let dataDict = try result.dataDictionary()
+            if dataDict.isEmpty {
+                return NotificationList(models: [])
+            } else {
+                return try dataDict.dencode(NotificationList.self)
+            }
         }.eraseToAnyPublisher()
     }
     
-    func getNotificationList() -> AnyPublisher<NotificationList, Error> {
-        let urlString = "https://willywu0201.github.io/data/notificationList.json"
-        return request(urlString: urlString).tryMap {
-            try $0.dataDictionary().dencode(NotificationList.self)
-        }.eraseToAnyPublisher()
-    }
     
     func getSavingList(firstOpen: Bool, currency: Currency) -> AnyPublisher<SavingsList, Error> {
         var urlString: String
@@ -105,10 +109,20 @@ class APIService :  NSObject {
         }.eraseToAnyPublisher()
     }
     
-    func getFavoriteList() -> AnyPublisher<FavoriteList, Error>  {
-        let urlString = "https://willywu0201.github.io/data/favoriteList.json"
-        return request(urlString: urlString).tryMap {
-            try $0.dataDictionary().dencode(FavoriteList.self)
+    func getFavoriteList(firstOpen: Bool = false) -> AnyPublisher<FavoriteList, Error>  {
+        var urlString: String
+        if firstOpen {
+            urlString = "https://willywu0201.github.io/data/emptyFavoriteList.json"
+        } else {
+            urlString = "https://willywu0201.github.io/data/favoriteList.json"
+        }
+        return request(urlString: urlString).tryMap { result in
+            let dataDict = try result.dataDictionary()
+            if dataDict.isEmpty {
+                return FavoriteList(models: [])
+            } else {
+                return try dataDict.dencode(FavoriteList.self)
+            }
         }.eraseToAnyPublisher()
     }
     
@@ -118,168 +132,5 @@ class APIService :  NSObject {
             try $0.dataDictionary().dencode(BannerList.self)
         }.eraseToAnyPublisher()
     }
-
+    
 }
-
-extension APIService {
-    func request(urlString: String, completion : @escaping (JsonResultModel?, Error?) -> ())  {
-        
-       
-        guard let url = URL(string: urlString) else {
-            completion(nil, CustomError.invlidURL)
-            return
-        }
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                completion(nil, error)
-                return
-            }
-            guard let data = data else {
-                completion(nil, CustomError.responseNoData)
-                return
-            }
-            do {
-                let jsonDecoder = JSONDecoder()
-                let resultModel = try jsonDecoder.decode(JsonResultModel.self, from: data)
-                completion(resultModel, nil)
-            } catch {
-                completion(nil, CustomError.decodeError)
-            }
-
-        }.resume()
-    }
-    
-    func getEmptyNotificationList(completion : @escaping (NotificationList?, Error?) -> ()) {
-        let urlString = "https://willywu0201.github.io/data/emptyNotificationList.json"
-        request(urlString: urlString) { result, error in
-            guard result != nil else {
-                completion(nil, CustomError.resultIsNil)
-                return
-            }
-            completion(NotificationList(models: []), error)
-        }
-    }
-    
-    func getNotificationList(completion : @escaping (NotificationList?, Error?) -> ()) {
-        let urlString = "https://willywu0201.github.io/data/notificationList.json"
-        request(urlString: urlString) { result, error in
-            do {
-                let model = try result?.dataDictionary().dencode(NotificationList.self)
-                completion(model, error)
-            } catch {
-                completion(nil, CustomError.decodeError)
-            }
-           
-        }
-    }
-    
-    func getSavingList(firstOpen: Bool, currency: Currency, completion : @escaping (SavingsList?, Error?) -> ()) {
-        var urlString: String
-        switch (firstOpen, currency) {
-        case (true, .usd):
-            urlString = "https://willywu0201.github.io/data/usdSavings1.json"
-        case (true, .khr):
-            urlString = "https://willywu0201.github.io/data/khrSavings1.json"
-        case (false, .usd):
-            urlString = "https://willywu0201.github.io/data/usdSavings2.json"
-        case (false, .khr):
-            urlString = "https://willywu0201.github.io/data/khrSavings2.json"
-        }
-        request(urlString: urlString) { result, error in
-            do {
-                let model = try result?.dataDictionary().dencode(SavingsList.self)
-                completion(model, error)
-            } catch {
-                completion(nil, CustomError.decodeError)
-            }
-           
-        }
-    }
-    
-    func getFixedDepositList(firstOpen: Bool, currency: Currency, completion : @escaping (FixedDepositList?, Error?) -> ()) {
-        var urlString: String
-        switch (firstOpen, currency) {
-        case (true, .usd):
-            urlString = "https://willywu0201.github.io/data/usdFixed1.json"
-        case (true, .khr):
-            urlString = "https://willywu0201.github.io/data/khrFixed1.json"
-        case (false, .usd):
-            urlString = "https://willywu0201.github.io/data/usdFixed2.json"
-        case (false, .khr):
-            urlString = "https://willywu0201.github.io/data/khrFixed2.json"
-        }
-        request(urlString: urlString) { result, error in
-            do {
-                let model = try result?.dataDictionary().dencode(FixedDepositList.self)
-                completion(model, error)
-            } catch {
-                completion(nil, CustomError.decodeError)
-            }
-           
-        }
-    }
-    
-    func getDigitalList(firstOpen: Bool, currency: Currency, completion : @escaping (DigitalList?, Error?) -> ()) {
-        var urlString: String
-        switch (firstOpen, currency) {
-        case (true, .usd):
-            urlString = "https://willywu0201.github.io/data/usdDigital1.json"
-        case (true, .khr):
-            urlString = "https://willywu0201.github.io/data/khrDigital1.json"
-        case (false, .usd):
-            urlString = "https://willywu0201.github.io/data/usdDigital2.json"
-        case (false, .khr):
-            urlString = "https://willywu0201.github.io/data/khrDigital1.json"
-        }
-        request(urlString: urlString) { result, error in
-            do {
-                let model = try result?.dataDictionary().dencode(DigitalList.self)
-                completion(model, error)
-            } catch {
-                completion(nil, CustomError.decodeError)
-            }
-           
-        }
-    }
-    
-    func getEmptyFavoriteList(completion : @escaping (FavoriteList?, Error?) -> ()) {
-        let urlString = "https://willywu0201.github.io/data/emptyFavoriteList.json"
-        request(urlString: urlString) { result, error in
-            guard result != nil else {
-                completion(nil, CustomError.resultIsNil)
-                return
-            }
-            completion(FavoriteList(models: []), error)
-        }
-    }
-    
-    func getFavoriteList(completion : @escaping (FavoriteList?, Error?) -> ()) {
-        let urlString = "https://willywu0201.github.io/data/favoriteList.json"
-        request(urlString: urlString) { result, error in
-            do {
-                let model = try result?.dataDictionary().dencode(FavoriteList.self)
-                completion(model, error)
-            } catch {
-                completion(nil, CustomError.decodeError)
-            }
-           
-        }
-    }
-    
-    func getAdBannerList(completion : @escaping (BannerList?, Error?) -> ()) {
-        let urlString = "https://willywu0201.github.io/data/banner.json"
-        request(urlString: urlString) { result, error in
-            do {
-                let model = try result?.dataDictionary().dencode(BannerList.self)
-                completion(model, error)
-            } catch {
-                completion(nil, CustomError.decodeError)
-            }
-           
-        }
-    }
-}
-
-
-
-

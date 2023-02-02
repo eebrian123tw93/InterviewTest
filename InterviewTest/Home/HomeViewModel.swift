@@ -30,10 +30,10 @@ class HomeViewModel: ObservableObject {
         let getUSDTotalBalance = apiService.getTotalBalance(firstOpen: firstOpen, currency: .usd).share()
         let getHKRTotalBalance = apiService.getTotalBalance(firstOpen: firstOpen, currency: .khr).share()
         
-        let getNotificationList = apiService.getNotificationList()
-            .map { !$0.models.filter { $0.status }.isEmpty }.share()
+        let getNotificationList = apiService.getNotificationList(firstOpen: firstOpen)
+            .map { !$0.models.filter { $0.status }.isEmpty }
         
-        let getFavoriteList = apiService.getFavoriteList()
+        let getFavoriteList = apiService.getFavoriteList(firstOpen: firstOpen)
             .map { $0.models }.share()
         
         let getAdBannerList = apiService.getAdBannerList()

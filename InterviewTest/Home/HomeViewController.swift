@@ -161,6 +161,13 @@ extension HomeViewController: UICollectionViewDataSource {
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if collectionView == bannerCollectionView, let cell = cell as? BannerCell {
+           let model = bannerModels[indexPath.row]
+           cell.willDisplay(model: model)
+       }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == favoriteCollectionView,
            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteCell", for: indexPath) as? FavoriteCell {
@@ -172,7 +179,7 @@ extension HomeViewController: UICollectionViewDataSource {
             let model = bannerModels[indexPath.row]
             cell.configure(model: model)
             return cell
-        }else {
+        } else {
             let cell = UICollectionViewCell()
             return cell
         }
