@@ -91,15 +91,23 @@
                                                         <color key="textColor" red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gSF-6H-wfF">
+                                                        <rect key="frame" x="24" y="23.5" width="358" height="29"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
                                                 </subviews>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
+                                                    <constraint firstItem="gSF-6H-wfF" firstAttribute="leading" secondItem="YYs-3L-EI1" secondAttribute="leading" id="2w9-nE-wO8"/>
                                                     <constraint firstItem="YYs-3L-EI1" firstAttribute="leading" secondItem="xNf-0u-37F" secondAttribute="leading" id="9zg-x6-dSu"/>
                                                     <constraint firstAttribute="height" constant="64" id="AsO-NE-ks1"/>
                                                     <constraint firstItem="YYs-3L-EI1" firstAttribute="top" secondItem="xNf-0u-37F" secondAttribute="bottom" id="Dz4-4N-3PN"/>
                                                     <constraint firstItem="xNf-0u-37F" firstAttribute="leading" secondItem="Zw4-d8-p2W" secondAttribute="leading" constant="24" id="anR-Hx-Aux"/>
+                                                    <constraint firstItem="gSF-6H-wfF" firstAttribute="top" secondItem="YYs-3L-EI1" secondAttribute="top" id="ebe-47-bTC"/>
+                                                    <constraint firstAttribute="trailing" secondItem="gSF-6H-wfF" secondAttribute="trailing" constant="32" id="nX0-rn-zh5"/>
                                                     <constraint firstItem="xNf-0u-37F" firstAttribute="top" secondItem="Zw4-d8-p2W" secondAttribute="top" constant="4" id="sFD-eB-H5V"/>
-                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="YYs-3L-EI1" secondAttribute="trailing" constant="20" symbolic="YES" id="suo-Dh-KAY"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="YYs-3L-EI1" secondAttribute="trailing" constant="32" id="suo-Dh-KAY"/>
+                                                    <constraint firstItem="gSF-6H-wfF" firstAttribute="height" secondItem="YYs-3L-EI1" secondAttribute="height" id="ubB-2o-zeu"/>
                                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="xNf-0u-37F" secondAttribute="trailing" constant="20" symbolic="YES" id="zwH-Sg-UDY"/>
                                                 </constraints>
                                             </view>
@@ -118,11 +126,19 @@
                                                         <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aQ4-eG-zRI">
+                                                        <rect key="frame" x="24" y="23.5" width="358" height="29"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
                                                 </subviews>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
+                                                    <constraint firstItem="aQ4-eG-zRI" firstAttribute="leading" secondItem="pO4-Zb-pzt" secondAttribute="leading" id="2ZG-2K-els"/>
+                                                    <constraint firstAttribute="trailing" secondItem="aQ4-eG-zRI" secondAttribute="trailing" constant="32" id="7LB-02-2dP"/>
                                                     <constraint firstItem="pO4-Zb-pzt" firstAttribute="top" secondItem="Rkd-ve-hzs" secondAttribute="bottom" id="DZc-6g-VeQ"/>
                                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="pO4-Zb-pzt" secondAttribute="trailing" constant="20" symbolic="YES" id="FBX-kR-MNL"/>
+                                                    <constraint firstItem="aQ4-eG-zRI" firstAttribute="height" secondItem="pO4-Zb-pzt" secondAttribute="height" id="FVA-cK-H6s"/>
+                                                    <constraint firstItem="aQ4-eG-zRI" firstAttribute="top" secondItem="pO4-Zb-pzt" secondAttribute="top" id="ZHY-Ub-jtd"/>
                                                     <constraint firstItem="pO4-Zb-pzt" firstAttribute="leading" secondItem="Rkd-ve-hzs" secondAttribute="leading" id="aDT-n8-ANY"/>
                                                     <constraint firstAttribute="height" constant="64" id="dWn-zD-rkP"/>
                                                     <constraint firstItem="Rkd-ve-hzs" firstAttribute="leading" secondItem="M1Y-S1-IQg" secondAttribute="leading" constant="24" id="oiB-e0-HCe"/>
@@ -534,7 +550,7 @@
                                                 <subviews>
                                                     <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="I3R-7u-wXX">
                                                         <rect key="frame" x="186" y="9" width="42.5" height="0.0"/>
-                                                        <color key="pageIndicatorTintColor" systemColor="systemGray2Color"/>
+                                                        <color key="pageIndicatorTintColor" red="0.43529411764705883" green="0.43529411764705883" blue="0.43529411764705883" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <color key="currentPageIndicatorTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </pageControl>
                                                 </subviews>
@@ -716,9 +732,11 @@
                         <outlet property="favoriteCollectionView" destination="wce-pf-62d" id="dEr-W0-cTQ"/>
                         <outlet property="floatingView" destination="9Wk-j3-xrT" id="nGk-rZ-Zuv"/>
                         <outlet property="khrAmountLabel" destination="pO4-Zb-pzt" id="8Bc-f4-5pc"/>
+                        <outlet property="khrAmountLoadingView" destination="aQ4-eG-zRI" id="NvK-Ht-bJ3"/>
                         <outlet property="pageControl" destination="I3R-7u-wXX" id="mon-5R-irb"/>
                         <outlet property="scrollView" destination="tR1-e9-hvJ" id="cbd-hh-yUh"/>
                         <outlet property="usdAmountLabel" destination="YYs-3L-EI1" id="Pkf-BL-K3G"/>
+                        <outlet property="usdAmountLoadingView" destination="gSF-6H-wfF" id="txV-Qn-gCL"/>
                         <segue destination="Ju3-Ww-6bY" kind="show" identifier="homeToNotification" id="1lY-t7-Nf0"/>
                     </connections>
                 </viewController>
@@ -866,8 +884,8 @@
         <image name="iconArrowWTailBack" width="24" height="24"/>
         <image name="iconBell01Nomal" width="24" height="25"/>
         <image name="iconEye01On" width="24" height="24"/>
-        <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
     </resources>
 </document>

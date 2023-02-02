@@ -10,8 +10,8 @@ import Combine
 
 class HomeViewModel: ObservableObject {
     private var apiService: APIService!
-    @Published var usdAccountBalance: Double = 0
-    @Published var hkrAccountBalance: Double = 0
+    @Published var usdAccountBalance: Double?
+    @Published var hkrAccountBalance: Double?
     @Published var hasNotice = false
     @Published var hiddenBalance = true
     @Published var refreshing = true
@@ -26,7 +26,8 @@ class HomeViewModel: ObservableObject {
     }
     
     func refresh(firstOpen: Bool = true) {
-        
+        usdAccountBalance = nil
+        hkrAccountBalance = nil
         let getUSDTotalBalance = apiService.getTotalBalance(firstOpen: firstOpen, currency: .usd).share()
         let getHKRTotalBalance = apiService.getTotalBalance(firstOpen: firstOpen, currency: .khr).share()
         
