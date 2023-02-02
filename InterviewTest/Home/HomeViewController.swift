@@ -38,7 +38,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         }
     }
     @IBOutlet weak var bannerCollectionView: UICollectionView!
-
+    
     @IBOutlet weak var pageControl: UIPageControl!
     
     private var cancellables: Set<AnyCancellable> = []
@@ -48,19 +48,21 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
     let viewModel = HomeViewModel()
     var favoriteModels: [FavoriteModel] = []
     var bannerModels: [BannerModel] = []
+    var timer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-     
+        
         refreshControl.attributedTitle = NSAttributedString(string: "重新載入")
         scrollView.refreshControl = refreshControl
         scrollView.contentInset = .init(top: 0, left: 0, bottom: 71, right: 0)
-     
+        
         configBannerCollectioView()
         configFavoriteCollectioView()
-
+        
         bindEvent()
         bindUI()
+        setupTimer()
     }
     
     func configBannerCollectioView() {
@@ -84,27 +86,34 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         eyeButton.addTarget(self, action: #selector(clickEyes), for: .touchUpInside)
         bellButton.addTarget(self, action: #selector(clickBell), for: .touchUpInside)
+        pageControl.addTarget(self, action: #selector(changePageContro), for: .valueChanged)
     }
     
     func bindUI() {
         Publishers.CombineLatest(viewModel.$usdAccountBalance, viewModel.$hiddenBalance)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] balance, hiddenBalance in
-                self?.usdAmountLabel.text = hiddenBalance ? "********": balance.description
+                let formatter = NumberFormatter()
+                formatter.numberStyle = .decimal
+                let moneyString = formatter.string(from: NSNumber(value: balance))
+                self?.usdAmountLabel.text = hiddenBalance ? "********": moneyString
             }).store(in: &cancellables)
         
         Publishers.CombineLatest(viewModel.$hkrAccountBalance, viewModel.$hiddenBalance)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] balance, hiddenBalance in
-                self?.khrAmountLabel.text = hiddenBalance ? "********": balance.description
+                let formatter = NumberFormatter()
+                formatter.numberStyle = .decimal
+                let moneyString = formatter.string(from: NSNumber(value: balance))
+                self?.khrAmountLabel.text = hiddenBalance ? "********": moneyString
             }).store(in: &cancellables)
         
         viewModel.$hiddenBalance
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] hiddenBalance in
-            let image = hiddenBalance ? UIImage(named: "iconEye02Off") : UIImage(named: "iconEye01On")
-            self?.eyeButton.setImage(image, for: .normal)
-        }).store(in: &cancellables)
+                let image = hiddenBalance ? UIImage(named: "iconEye02Off") : UIImage(named: "iconEye01On")
+                self?.eyeButton.setImage(image, for: .normal)
+            }).store(in: &cancellables)
         
         viewModel.$refreshing
             .receive(on: DispatchQueue.main)
@@ -148,8 +157,33 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
     @objc func clickBell() {
         performSegue(withIdentifier: "homeToNotification", sender: nil)
     }
-
-
+    
+    @objc func changePageContro() {
+        timer?.invalidate()
+        let x = CGFloat(pageControl.currentPage) * bannerCollectionView.frame.size.width
+        bannerCollectionView.setContentOffset(CGPoint(x: x, y: 0), animated: true)
+        setupTimer()
+    }
+    
+    @objc func scrollAutomatically() {
+        if pageControl.currentPage >= bannerModels.count - 1 {
+            pageControl.currentPage = 0
+        } else {
+            pageControl.currentPage = pageControl.currentPage + 1
+        }
+        
+        let x = CGFloat(pageControl.currentPage) * bannerCollectionView.frame.size.width
+        bannerCollectionView.setContentOffset(CGPoint(x: x, y: 0), animated: true)
+    }
+    
+    func setupTimer() {
+        let timer = Timer.scheduledTimer(timeInterval: 3,target:self, selector:#selector(scrollAutomatically), userInfo:nil, repeats:true)
+        RunLoop.current.add(timer, forMode: .common)
+        self.timer = timer
+    }
+    
+    
+    
 }
 
 extension HomeViewController: UICollectionViewDataSource {
@@ -163,9 +197,9 @@ extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if collectionView == bannerCollectionView, let cell = cell as? BannerCell {
-           let model = bannerModels[indexPath.row]
-           cell.willDisplay(model: model)
-       }
+            let model = bannerModels[indexPath.row]
+            cell.willDisplay(model: model)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -187,9 +221,15 @@ extension HomeViewController: UICollectionViewDataSource {
 }
 
 extension HomeViewController: UIScrollViewDelegate {
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        timer?.invalidate()
+    }
+    
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-            let page = scrollView.contentOffset.x / scrollView.bounds.width
-            pageControl.currentPage = Int(page)
+        let page = scrollView.contentOffset.x / scrollView.bounds.width
+        pageControl.currentPage = Int(page)
+        setupTimer()
     }
 }
 
