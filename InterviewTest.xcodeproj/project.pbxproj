@@ -127,8 +127,8 @@
 			children = (
 				D35181F5298BF46600974F65 /* AppDelegate.swift */,
 				D35181F7298BF46600974F65 /* SceneDelegate.swift */,
-				D3518234298BF58800974F65 /* Notification */,
 				D351822F298BF56200974F65 /* Model */,
+				D3518234298BF58800974F65 /* Notification */,
 				D351822E298BF53E00974F65 /* Home */,
 				D351823B298BF5D800974F65 /* APIService.swift */,
 				D35181FB298BF46600974F65 /* Main.storyboard */,

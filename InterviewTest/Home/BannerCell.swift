@@ -7,29 +7,38 @@
 
 
 import UIKit
+import Combine
 
 class BannerCell: UICollectionViewCell {
     
     @IBOutlet weak var bannerImageView: UIImageView!
 
+    private var cancellables: Set<AnyCancellable> = []
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        cancellables = []
+        bannerImageView.image = nil
     }
     
     func configure(model: BannerModel) {
+      
+    }
+    
+    func willDisplay(model: BannerModel) {
         let urlString = model.linkURL
         guard let url = URL(string: urlString) else { return }
-        DispatchQueue.global().async {
-            guard let data = try? Data(contentsOf: url) else { return }
-            DispatchQueue.main.async { [self] in
-                self.bannerImageView.image = UIImage(data: data)
-            }
-        }
-        
+        URLSession.shared
+            .dataTaskPublisher(for: url)
+            .map { UIImage(data: $0.data) }
+            .replaceError(with: nil)
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.image, on: bannerImageView)
+            .store(in: &cancellables)
     }
     
 }
