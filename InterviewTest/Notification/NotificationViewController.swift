@@ -25,6 +25,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource {
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         backButton.addTarget(self, action: #selector(clickBack), for: .touchUpInside)
         bindUI()
+        viewModel.refresh()
     }
 
     

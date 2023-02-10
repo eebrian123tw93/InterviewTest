@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class APIService :  NSObject {
+class APIService :  ServiceProtocal {
     
     func request(urlString: String) -> AnyPublisher<JsonResultModel, Error> {
         guard let url = URL(string: urlString) else {

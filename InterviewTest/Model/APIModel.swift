@@ -39,7 +39,6 @@ struct SavingsList: Codable {
     let models: [BalanceModel]
     enum CodingKeys: String, CodingKey {
         case models = "savingsList"
-        
     }
 }
 
@@ -47,7 +46,6 @@ struct FixedDepositList: Codable {
     let models: [BalanceModel]
     enum CodingKeys: String, CodingKey {
         case models = "fixedDepositList"
-        
     }
 }
 
@@ -79,14 +77,13 @@ struct BannerList: Codable {
     let models: [BannerModel]
     enum CodingKeys: String, CodingKey {
         case models = "bannerList"
-        
     }
 }
 
 struct BannerModel: Codable {
     let adSeqNo: Int
     let linkURL: String
-
+    
     enum CodingKeys: String, CodingKey {
         case adSeqNo
         case linkURL = "linkUrl"

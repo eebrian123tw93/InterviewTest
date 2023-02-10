@@ -9,13 +9,17 @@ import Foundation
 import Combine
 
 class NotificationViewModel: ObservableObject {
-    private var apiService: APIService!
+    private var apiService: ServiceProtocal!
     @Published var notificationModels: [NotificationModel] = []
     @Published var refreshing = true
     private var cancellables: Set<AnyCancellable> = []
-    init() {
-        apiService = APIService()
-        getNotificationList()
+    
+    convenience init() {
+        self.init(apiService: APIService())
+    }
+    
+    init(apiService: ServiceProtocal) {
+        self.apiService = apiService
     }
     
     func refresh() {
@@ -23,7 +27,7 @@ class NotificationViewModel: ObservableObject {
     }
     
     func getNotificationList() {
-        apiService.getNotificationList()
+        apiService.getNotificationList(firstOpen: false)
             .sink(receiveValue: { [unowned self] listModel in
                 self.notificationModels = listModel.models
                 self.refreshing = false
