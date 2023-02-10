@@ -10,7 +10,6 @@ import Combine
 
 final class NotificationViewModelTestTests: XCTestCase {
     
-    
     private var mockService: MockService!
     private var viewModel: NotificationViewModel!
     
@@ -26,7 +25,7 @@ final class NotificationViewModelTestTests: XCTestCase {
         viewModel = nil
     }
     
-    func testGetNotificationLit() throws {
+    func testGetNotificationList() throws {
         let notifiacationList = NotificationList(models: [NotificationModel(status: true, updateDateTime: "", title: "", message: "")])
         let expectation = XCTestExpectation(description: "State is set to populated")
         
@@ -45,7 +44,7 @@ final class NotificationViewModelTestTests: XCTestCase {
         // This is an example of a performance test case.
         self.measure { () in
             do {
-                try testGetNotificationLit()
+                try testGetNotificationList()
             } catch {
                 
             }

@@ -67,6 +67,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate {
         setupTimer()
         configureGradientView(target: usdAmountLoadingView)
         configureGradientView(target: khrAmountLoadingView)
+        viewModel.refresh()
     }
     
     func configBannerCollectioView() {

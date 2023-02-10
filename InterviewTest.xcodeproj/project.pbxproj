@@ -52,6 +52,8 @@
 		D3AF2960299626C30050EF06 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3518226298BF50500974F65 /* DataExtension.swift */; };
 		D3AF2961299626C30050EF06 /* CodableExtenstion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3518228298BF50500974F65 /* CodableExtenstion.swift */; };
 		D3AF2962299626C30050EF06 /* DictionaryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3518227298BF50500974F65 /* DictionaryExtension.swift */; };
+		D3AF296529962ECA0050EF06 /* HomeViewModelTestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3AF296429962ECA0050EF06 /* HomeViewModelTestTests.swift */; };
+		D3AF2966299630EF0050EF06 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3518240298BF5F900974F65 /* HomeViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +103,7 @@
 		D3AF294F2996223F0050EF06 /* NotificationViewModelTestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModelTestTests.swift; sourceTree = "<group>"; };
 		D3AF29532996237D0050EF06 /* ServiceProtocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProtocal.swift; sourceTree = "<group>"; };
 		D3AF2957299623940050EF06 /* MockService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockService.swift; sourceTree = "<group>"; };
+		D3AF296429962ECA0050EF06 /* HomeViewModelTestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModelTestTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +176,7 @@
 			children = (
 				D351820C298BF46700974F65 /* InterviewTestTests.swift */,
 				D3AF294F2996223F0050EF06 /* NotificationViewModelTestTests.swift */,
+				D3AF296429962ECA0050EF06 /* HomeViewModelTestTests.swift */,
 			);
 			path = InterviewTestTests;
 			sourceTree = "<group>";
@@ -392,7 +396,9 @@
 				D3AF294D29961D300050EF06 /* APIService.swift in Sources */,
 				D3AF294B29961D230050EF06 /* JsonResultModel.swift in Sources */,
 				D3AF2951299622EF0050EF06 /* NotificationViewModel.swift in Sources */,
+				D3AF2966299630EF0050EF06 /* HomeViewModel.swift in Sources */,
 				D3AF29552996237D0050EF06 /* ServiceProtocal.swift in Sources */,
+				D3AF296529962ECA0050EF06 /* HomeViewModelTestTests.swift in Sources */,
 				D3AF295B2996269B0050EF06 /* PublisherExtension.swift in Sources */,
 				D3AF2959299623940050EF06 /* MockService.swift in Sources */,
 			);

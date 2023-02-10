@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 class HomeViewModel: ObservableObject {
-    private var apiService: APIService!
+    private var apiService: ServiceProtocal!
     @Published var usdAccountBalance: Double?
     @Published var hkrAccountBalance: Double?
     @Published var hasNotice = false
@@ -20,9 +20,12 @@ class HomeViewModel: ObservableObject {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init() {
-        apiService = APIService()
-        refresh()
+    convenience init() {
+        self.init(apiService: APIService())
+    }
+    
+    init(apiService: ServiceProtocal) {
+        self.apiService = apiService
     }
     
     func refresh(firstOpen: Bool = true) {
